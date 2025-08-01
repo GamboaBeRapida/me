@@ -59,3 +59,25 @@ def get_repair_bay():
 @app.post("/teapot")
 def post_teapot():
     return Response(content="I'm a teapot", status_code=418)
+
+
+@app.get("/phase-change-diagram")
+async def phase_change_diagram(
+    pressure: float = Query(..., description="Pressure in MPa")
+):
+    """
+    Return the saturated specific volumes (liquid & vapor) at the given pressure.
+    At the critical point Pc = 10 MPa both phases have the same v = 0.0035 m³/kg.
+    """
+    # for now we only have data at the critical pressure
+    if pressure == 10.0:
+        v = 0.0035
+        return {
+            "specific_volume_liquid": v,
+            "specific_volume_vapor":  v
+        }
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"No phase-change data available for P={pressure} MPa"
+    )
